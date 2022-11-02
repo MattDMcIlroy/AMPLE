@@ -29,6 +29,14 @@ nmp  = length(mpData);                                                      % nu
 lstp = 0;                                                                   % zero loadstep counter (for plotting function)
 uvw  = zeros(nDoF,1);                                                       % zeros displacements (for plotting function)
 run postPro;                                                                % plotting initial state & mesh
+
+for i=1:nD
+  ci = mesh.coord(:,i);                                                     % nodal coordinates in current i direction
+  c  = ci(mesh.etpl);                                                       % reshaped element coordinates in current i direction
+  mesh.Cmin(:,i) = min(c,[],2);                                                       % element lower coordinate limit 
+  mesh.Cmax(:,i) = max(c,[],2);                                                       % element upper coordainte limit  
+end
+
 for lstp=1:lstps                                                            % loadstep loop
   fprintf(1,'\n%s %4i %s %4i\n','loadstep ',lstp,' of ',lstps);             % text output to screen (loadstep)
   [mesh,mpData] = elemMPinfo(mesh,mpData);                                  % material point - element information

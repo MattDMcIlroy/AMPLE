@@ -1,4 +1,4 @@
-function [eIN] = elemForMP(coord,etpl,mpC,lp)
+function [eIN] = elemForMP(coord,etpl,mpC,lp,Cmin,Cmax)
 
 %Find elements associated with the material point
 %--------------------------------------------------------------------------
@@ -31,11 +31,7 @@ Pmin = mpC-lp;                                                              % pa
 Pmax = mpC+lp;                                                              % particle domain extents (upper)
 a    = true(nels,1);                                                        % initialise logical array
 for i=1:nD
-  ci = coord(:,i);                                                          % nodal coordinates in current i direction
-  c  = ci(etpl);                                                            % reshaped element coordinates in current i direction
-  Cmin = min(c,[],2);                                                       % element lower coordinate limit 
-  Cmax = max(c,[],2);                                                       % element upper coordainte limit  
-  a = a.*((Cmin<Pmax(i)).*(Cmax>Pmin(i)));                                  % element overlap with mp domain
+  a = a.*((Cmin(:,i)<Pmax(i)).*(Cmax(:,i)>Pmin(i)));                          % element overlap with mp domain
 end
 eIN = (1:nels).';                                                           % list of all elements
 eIN = eIN(a>0);                                                             % remove those elements not in the domain
