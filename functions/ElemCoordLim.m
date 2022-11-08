@@ -32,3 +32,4 @@ for i=1:nD
   mesh.Cmin(:,i) = min(c,[],2);                                             % element lower coordinate limit 
   mesh.Cmax(:,i) = max(c,[],2);                                             % element upper coordainte limit  
 end
+end
