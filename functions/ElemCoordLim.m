@@ -25,7 +25,7 @@ function [mesh] = ElemCoordLim(mesh)
 %--------------------------------------------------------------------------
 
 
-nD   = size(coord,2);                                                       % number of dimensions
+nD   = size(mesh.coord,2);                                                  % number of dimensions
 for i=1:nD
   ci = mesh.coord(:,i);                                                     % nodal coordinates in current i direction
   c  = ci(mesh.etpl);                                                       % reshaped element coordinates in current i direction
