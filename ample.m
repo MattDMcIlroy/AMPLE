@@ -18,9 +18,9 @@
 % UPDATEMPS             - update material points
 % POSTPRO               - post processing function including vtk output
 %--------------------------------------------------------------------------
-clear;
+% clear;
 addpath('constitutive','functions','plotting','setup');        
-[lstps,g,mpData,mesh] = setupGrid;                                          % setup information
+[lstps,g,mpData,mesh] = setupGrid(nelsy,mp);                                          % setup information
 NRitMax = 10; tol = 1e-9;                                                   % Newton Raphson parameters
 [nodes,nD] = size(mesh.coord);                                              % number of nodes and dimensions
 [nels,nen] = size(mesh.etpl);                                               % number of elements and nodes/element

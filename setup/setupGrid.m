@@ -1,4 +1,4 @@
-function [lstps,g,mpData,mesh] = setupGrid
+function [lstps,g,mpData,mesh] = setupGrid(nelsy,mp)
 
 %Problem setup information
 %--------------------------------------------------------------------------
@@ -60,9 +60,9 @@ g      = 10;                                                                % gr
 rho    = 80;                                                                % material density
 lstps  = 40;                                                                % number of loadsteps
 nelsx  = 1;                                                                 % number of elements in the x direction
-nelsy  = 2^9;                                                               % number of elements in the y direction
+% nelsy  = 2^4;                                                               % number of elements in the y direction
 ly     = 50;  lx = ly/nelsy;                                                % domain dimensions
-mp     = 2;                                                                 % number of material points in each direction per element
+% mp     = 2;                                                                 % number of material points in each direction per element
 mpType = 2;                                                                 % material point type: 1 = MPM, 2 = GIMP
 cmType = 1;                                                                 % constitutive model: 1 = elastic, 2 = vM plasticity
 

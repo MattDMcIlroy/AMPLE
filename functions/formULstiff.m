@@ -26,30 +26,16 @@ function [A] = formULstiff(F,D,s,B)
 %--------------------------------------------------------------------------
 % See also:
 % PARDERGEN  - partial derivative of a second order tensor
+% SigmaMatrixCreator
+% TMatrixCreator
 %--------------------------------------------------------------------------
 
 t = [1 2 3 4 4 5 5 6 6];                                                    % 6 to 9 component steering vector
 J = det(F);                                                                 % volume ratio
 [bV,bP] = eig(B); bP = [bP(1); bP(5); bP(9)];                               % eigen values/vector of the trial elastic strain tensor
 L = parDerGen(B,bV,bP,log(bP),1./bP);                                       % derivative of the logarithmic strain
-S = [s(1) 0    0    s(4) 0    0    0    0    s(6);                          % matrix form of sigma_{il}delta_{jk}
-     0    s(2) 0    0    s(4) s(5) 0    0    0   ;
-     0    0    s(3) 0    0    0    s(5) s(6) 0   ;
-     0    s(4) 0    0    s(1) s(6) 0    0    0   ;
-     s(4) 0    0    s(2) 0    0    0    0    s(5);
-     0    0    s(5) 0    0    0    s(2) s(4) 0   ;
-     0    s(5) 0    0    s(6) s(3) 0    0    0   ;
-     s(6) 0    0    s(5) 0    0    0    0    s(3);
-     0    0    s(6) 0    0    0    s(4) s(1) 0   ];                                                         
-T = [2*B(1) 0      0      2*B(4) 0      0      2*B(7) 0      0   ;          % matrix form of delta_{pk}b^e_{ql}+delta_{qk}b^e_{pl}
-     0      2*B(5) 0      0      2*B(2) 2*B(8) 0      0      0   ;
-     0      0      2*B(9) 0      0      0      2*B(6) 2*B(3) 0   ;
-     B(2)   B(4)   0      B(5)   B(1)   B(7)   0      0      B(8);
-     B(2)   B(4)   0      B(5)   B(1)   B(7)   0      0      B(8);
-     0      B(6)   B(8)   0      B(3)   B(9)   B(5)   B(2)   0   ;
-     0      B(6)   B(8)   0      B(3)   B(9)   B(5)   B(2)   0   ;
-     B(3)   0      B(7)   B(6)   0      0      B(4)   B(1)   B(9);
-     B(3)   0      B(7)   B(6)   0      0      B(4)   B(1)   B(9)];                                                         
+S = SigmaMatrixCreator(s);                                                  % matrix form of sigma_{il}delta_{jk}
+T = TMatrixCreator(B);                                                      % matrix form of delta_{pk}b^e_{ql}+delta_{qk}b^e_{pl}
 A = D(t,t)*L(t,t)*T/(2*J)-S;                                                % consistent tangent stiffness matrix
 end
 
@@ -95,7 +81,8 @@ function [L] = parDerGen(X,eV,eP,yP,ydash)
 %          its arguement (6,6)
 %--------------------------------------------------------------------------
 % See also:
-% 
+% dX2dXMatrixCreator
+% IbMatrixCreator
 %--------------------------------------------------------------------------
 
 tol=1e-9;
@@ -124,12 +111,7 @@ elseif abs(eP(1)-eP(2))<tol || abs(eP(2)-eP(3))<tol || abs(eP(1)-eP(3))<tol % re
     s3 = 2*(ya-yc)/(xa-xc)^3-(yda+ydc)/(xa-xc)^2;
     s4 = xc*s3;
     s5 = xc^2*s3;
-    dX2dX=[2*X(1) 0      0      X(2)         0             X(3)          ;
-           0      2*X(5) 0      X(2)         X(6)          0             ;
-           0      0      2*X(9) 0            X(6)          X(3)          ;
-           X(2)   X(2)   0     (X(1)+X(5))/2 X(3)/2        X(6)/2        ;
-           0      X(6)   X(6)   X(3)/2       (X(5)+X(9))/2 X(2)/2        ;
-           X(3)   0      X(3)   X(6)/2       X(2)/2        (X(1)+X(9))/2];
+    dX2dX = dX2dXMatrixCreator(X);
     bm1  = [1 1 1 0 0 0].';
     bm11 = [1 1 1 0 0 0 ;
             1 1 1 0 0 0 ;
@@ -152,14 +134,9 @@ else                                                                        % ge
         esq = eV(:,i)*eV(:,i).';
         eDir(:,i) = [esq(1,1) esq(2,2) esq(3,3) esq(1,2) esq(2,3) esq(3,1)].';
     end
-    y = inv(X);
-    Ib=[y(1)^2    y(2)^2    y(7)^2     y(1)*y(2)               y(2)*y(7)               y(1)*y(7)              ;
-        y(2)^2    y(5)^2    y(6)^2     y(5)*y(2)               y(5)*y(6)               y(2)*y(6)              ;
-        y(7)^2    y(6)^2    y(9)^2     y(6)*y(7)               y(9)*y(6)               y(9)*y(7)              ;
-        y(1)*y(2) y(5)*y(2) y(6)*y(7) (y(1)*y(5)+y(2)^2)/2    (y(2)*y(6)+y(5)*y(7))/2 (y(1)*y(6)+y(2)*y(7))/2 ;
-        y(2)*y(7) y(5)*y(6) y(9)*y(6) (y(2)*y(6)+y(5)*y(7))/2 (y(9)*y(5)+y(6)^2)/2    (y(9)*y(2)+y(6)*y(7))/2 ;
-        y(1)*y(7) y(2)*y(6) y(9)*y(7) (y(1)*y(6)+y(2)*y(7))/2 (y(9)*y(2)+y(6)*y(7))/2 (y(9)*y(1)+y(7)^2)/2   ];
-    L = alfa*Is-bta*Ib;
+    y  = inv(X);
+    Ib = IbMatrixCreator(y);
+    L  = alfa*Is-bta*Ib;
     for i=1:3
         L = L+(ydash(i)+gama(i))*eDir(:,i)*eDir(:,i).';
     end
