@@ -1,4 +1,4 @@
-function [mesh,mpData] = elemMPinfo(mesh,mpData)
+function [mesh,mpData] = elemMPinfo(mesh,mpData,eINall)
 
 %Determine the basis functions for material points 
 %--------------------------------------------------------------------------
@@ -47,7 +47,7 @@ mpC  = reshape([mpData.mpC],nD,nmp).';                                      % al
 lp   = reshape([mpData.lp] ,nD,nmp).';                                      % all domain lengths
 eInA = zeros(nels,1);                                                       % zero elements taking part in the analysis
 for mp = 1:nmp
-    eIN  = elemForMP(mesh.coord,mesh.etpl,mpC(mp,:),lp(mp,:),mesh.Cmin,mesh.Cmax);              % elements connected to the material point
+    eIN  = elemForMP(mesh.coord,mesh.etpl,mpC(mp,:),lp(mp,:),mesh.Cmin,mesh.Cmax,eINall); % elements connected to the material point
     nIN  = nodesForMP(mesh.etpl,eIN).';                                     % unique list of nodes associated with elements
     nn   = length(nIN);                                                     % number of nodes influencing the MP
     Svp  = zeros(1,nn);                                                     % zero basis functions

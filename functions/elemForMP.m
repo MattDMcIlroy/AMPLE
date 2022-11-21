@@ -1,4 +1,4 @@
-function [eIN] = elemForMP(coord,etpl,mpC,lp,Cmin,Cmax)
+function [eIN] = elemForMP(coord,etpl,mpC,lp,Cmin,Cmax,eINall)
 
 %Find elements associated with the material point
 %--------------------------------------------------------------------------
@@ -33,6 +33,5 @@ a    = true(nels,1);                                                        % in
 for i=1:nD
   a = a.*((Cmin(:,i)<Pmax(i)).*(Cmax(:,i)>Pmin(i)));                          % element overlap with mp domain
 end
-eIN = (1:nels).';                                                           % list of all elements
-eIN = eIN(a>0);                                                             % remove those elements not in the domain
+eIN = eINall(a>0);                                                             % remove those elements not in the domain
 end                                                                        
