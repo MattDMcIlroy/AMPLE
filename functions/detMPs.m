@@ -111,15 +111,7 @@ for mp=1:nmp                                                                % ma
     A   = formULstiff(F,D,sig,BeT);                                         % spatial tangent stiffness matrix
                                                             
     iF   = dF\eye(3);                                                       % inverse deformation gradient increment
-    dXdx = [iF(1) 0     0     iF(2) 0     0     0     0     iF(3) ;         % start of loadstep to current configuration
-            0     iF(5) 0     0     iF(4) iF(6) 0     0     0     ;         % derivative mapping matrix
-            0     0     iF(9) 0     0     0     iF(8) iF(7) 0     ;
-            iF(4) 0     0     iF(5) 0     0     0     0     iF(6) ;
-            0     iF(2) 0     0     iF(1) iF(3) 0     0     0     ;
-            0     iF(8) 0     0     iF(7) iF(9) 0     0     0     ;
-            0     0     iF(6) 0     0     0     iF(5) iF(4) 0     ;
-            0     0     iF(3) 0     0     0     iF(2) iF(1) 0     ;
-            iF(7) 0     0     iF(8) 0     0     0     0     iF(9)];
+    [dXdx] = DXdxgen(iF);                                                   % derivative mapping matrix
     G  = dXdx(aPos,aPos)*G;                                                 % derivatives of basis functions (current) 
     
     kp = mpData(mp).vp*det(dF)*(G.'*A(aPos,aPos)*G);                        % material point stiffness contribution
