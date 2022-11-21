@@ -86,7 +86,12 @@ function [L] = parDerGen(X,eV,eP,yP,ydash)
 %--------------------------------------------------------------------------
 
 tol=1e-9;
-Is=diag([1 1 1 0.5 0.5 0.5]); 
+Is=[1   0   0   0   0   0;
+    0   1   0   0   0   0;
+    0   0   1   0   0   0;
+    0   0   0  0.5  0   0;
+    0   0   0   0  0.5  0;
+    0   0   0   0   0  0.5];
 if (abs(eP(1))<tol && abs(eP(2))<tol && abs(eP(3))<tol)                     % all zero eigenvalues case
     L = Is;
 elseif abs(eP(1)-eP(2))<tol && abs(eP(1)-eP(3))<tol                         % equal eigenvalues case
