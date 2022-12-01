@@ -24,14 +24,9 @@ function [Svp,dSvp] = SvpMPM(xp,xv,h)
 %
 %--------------------------------------------------------------------------
 
-if -h<(xp-xv) && (xp-xv)<=0                                                 % MP in "left" element
-  Svp = 1+(xp-xv)/h;
-  dSvp= 1/h;
-elseif  0<(xp-xv) && (xp-xv)<=h                                             % MP in "right" element
-  Svp = 1-(xp-xv)/h;  
-  dSvp=-1/h;
-else                                                                        % MP outside of element
-  Svp =0; 
-  dSvp=0;
-end
+MPleft  = -h<(xp-xv) & (xp-xv)<=0;                                          % MP in 'left' of the element
+MPright =  0<(xp-xv) & (xp-xv)<=h;                                          % MP in 'right' of the element
+
+Svp  = MPleft.*(1+(xp-xv)./h) + MPright.*(1-(xp-xv)./h);
+dSvp = MPleft.*    (1./h)     + MPright.*   (-1./h);
 end

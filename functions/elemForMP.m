@@ -31,7 +31,7 @@ Pmin = mpC-lp;                                                              % pa
 Pmax = mpC+lp;                                                              % particle domain extents (upper)
 a    = true(nels,1);                                                        % initialise logical array
 for i=1:nD
-  a = a.*((Cmin(:,i)<Pmax(i)).*(Cmax(:,i)>Pmin(i)));                          % element overlap with mp domain
+  a = a.*((Cmin(:,i)<Pmax(i)).*(Cmax(:,i)>Pmin(i)));                        % element overlap with mp domain
 end
-eIN = eINall(a>0);                                                             % remove those elements not in the domain
+eIN = eINall(a>0);                                                          % remove those elements not in the domain
 end                                                                        

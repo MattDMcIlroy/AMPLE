@@ -111,7 +111,38 @@ for mp=1:nmp                                                                % ma
     A   = formULstiff(F,D,sig,BeT);                                         % spatial tangent stiffness matrix
                                                             
     iF   = dF\eye(3);                                                       % inverse deformation gradient increment
-    [dXdx] = DXdxgen(iF);                                                   % derivative mapping matrix
+    
+    %---------------------------------------------------------------------- % Derivative mapping matrix
+    dXdx = zeros(9);
+    dXdx(1)  = iF(1);
+    dXdx(28) = iF(2);
+    dXdx(73) = iF(3);
+    dXdx(11) = iF(5);
+    dXdx(38) = iF(4);
+    dXdx(47) = iF(6);
+    dXdx(21) = iF(9);
+    dXdx(57) = iF(8);
+    dXdx(66) = iF(7);
+    dXdx(4)  = iF(4);
+    dXdx(31) = iF(5);
+    dXdx(76) = iF(6);
+    dXdx(14) = iF(2);
+    dXdx(41) = iF(1);
+    dXdx(50) = iF(3);
+    dXdx(15) = iF(8);
+    dXdx(42) = iF(7);
+    dXdx(51) = iF(9);
+    dXdx(25) = iF(6);
+    dXdx(61) = iF(5);
+    dXdx(70) = iF(4);
+    dXdx(26) = iF(3);
+    dXdx(62) = iF(2);
+    dXdx(71) = iF(1);
+    dXdx(9)  = iF(7);
+    dXdx(36) = iF(8);
+    dXdx(81) = iF(9);
+    %----------------------------------------------------------------------
+
     G  = dXdx(aPos,aPos)*G;                                                 % derivatives of basis functions (current) 
     
     kp = mpData(mp).vp*det(dF)*(G.'*A(aPos,aPos)*G);                        % material point stiffness contribution

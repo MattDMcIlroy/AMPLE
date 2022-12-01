@@ -40,12 +40,10 @@ lp     = mpData.lp;                                                         % ma
 mpType = mpData.mpType;                                                     % material point type (MPM or GIMPM)
 nD     = size(mpC,1)*size(mpC,2);                                           % number of dimensions
 S=zeros(nD,1); dS=S; dSvp=S;                                                % zero vectors used in calcs
-for i=1:nD
-    if mpType == 1
-        [S(i),dS(i)] = SvpMPM(mpC(i),coord(i),h(i));                        % 1D MPM functions
-    elseif mpType == 2
-        [S(i),dS(i)] = SvpGIMP(mpC(i),coord(i),h(i),lp(i));                 % 1D GIMPM functions
-    end
+if mpType == 1
+    [S,dS] = SvpMPMvectorised(mpC,coord,h);                                 % 1D MPM functions
+elseif mpType == 2
+    [S,dS] = SvpGIMPvectorised(mpC,coord,h,lp);                             % 1D GIMPM functions
 end
 if nD == 1
     indx = [];                                                              % index for basis derivatives (1D)

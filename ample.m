@@ -31,10 +31,10 @@ lstp = 0;                                                                   % ze
 uvw  = zeros(nDoF,1);                                                       % zeros displacements (for plotting function)
 run postPro;                                                                % plotting initial state & mesh
 [mesh] = ElemCoordLim(mesh);                                                % finds the coordinate limits for each element
-eINall = (1:nels).';                                                           % list of all elements
+eINall = (1:nels).';                                                        % list of all elements
 for lstp=1:lstps                                                            % loadstep loop
   fprintf(1,'\n%s %4i %s %4i\n','loadstep ',lstp,' of ',lstps);             % text output to screen (loadstep)
-  [mesh,mpData] = elemMPinfo(mesh,mpData,eINall);                                  % material point - element information
+  [mesh,mpData] = elemMPinfo(mesh,mpData,eINall);                           % material point - element information
   fext = detExtForce(nodes,nD,g,mpData);                                    % external force calculation (total)
   fext = fext*lstp/lstps;                                                   % current external force value
   oobf = fext;                                                              % initial out-of-balance force
