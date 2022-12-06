@@ -1,4 +1,4 @@
-function [Svp,dSvp] = MPMbasis(mesh,mpData,node)
+function [Svp,dSvp] = MPMbasis(mesh,mpData,nIN,nn)
 
 %Basis functions for the material point method
 %--------------------------------------------------------------------------
@@ -33,7 +33,7 @@ function [Svp,dSvp] = MPMbasis(mesh,mpData,node)
 % SVPGIMP   - GIMPM basis functions in 1D (mpType = 2)
 %--------------------------------------------------------------------------
 
-coord  = mesh.coord(node,:);                                                % node coordinates
+coord  = mesh.coord(nIN,:);                                                % node coordinates
 h      = mesh.h;                                                            % grid spacing
 mpC    = mpData.mpC;                                                        % material point coordinates
 lp     = mpData.lp;                                                         % material point domain length
@@ -41,9 +41,9 @@ mpType = mpData.mpType;                                                     % ma
 nD     = size(mpC,1)*size(mpC,2);                                           % number of dimensions
 S=zeros(nD,1); dS=S; dSvp=S;                                                % zero vectors used in calcs
 if mpType == 1
-    [S,dS] = SvpMPMvectorised(mpC,coord,h);                                 % 1D MPM functions
+    [S,dS] = SvpMPM(mpC,coord,h);                                           % 1D MPM functions
 elseif mpType == 2
-    [S,dS] = SvpGIMPvectorised(mpC,coord,h,lp);                             % 1D GIMPM functions
+    [S,dS] = SvpGIMP(mpC,coord,h,lp);                                       % 1D GIMPM functions
 end
 if nD == 1
     indx = [];                                                              % index for basis derivatives (1D)
@@ -52,8 +52,10 @@ elseif nD == 2
 elseif nD == 3
     indx = [2 3; 1 3; 1 2];                                                 % index for basis derivatives (3D)
 end
-Svp=prod(S);                                                                % basis function
+Svp=prod(S,2).';                                                              % basis function
 for i=1:nD                                                                  
-    dSvp(i)=dS(i)*prod(S(indx(i,:)));                                       % gradient of the basis function
+    for j=1:nn
+        dSvp(i,j)=dS(j,i)*prod(S(j,indx(i,:)));                                       % gradient of the basis function
+    end
 end
 end

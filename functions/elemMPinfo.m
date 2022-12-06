@@ -50,14 +50,7 @@ for mp = 1:nmp
     eIN  = elemForMP(mesh.coord,mesh.etpl,mpC(mp,:),lp(mp,:),mesh.Cmin,mesh.Cmax,eINall); % elements connected to the material point
     nIN  = nodesForMP(mesh.etpl,eIN).';                                     % unique list of nodes associated with elements
     nn   = length(nIN);                                                     % number of nodes influencing the MP
-    Svp  = zeros(1,nn);                                                     % zero basis functions
-    dSvp = zeros(nD,nn);                                                    % zero basis function derivatives
-    for i = 1:nn
-        node = nIN(i);                                                      % current node
-        [S,dS] = MPMbasis(mesh,mpData(mp),node);                            % basis function and spatial derivatives
-        Svp(i) = Svp(i) + S;                                                % basis functions for all nodes
-        dSvp(:,i) = dSvp(:,i) + dS;                                         % basis function derivatives
-    end  
+    [Svp,dSvp] = MPMbasis(mesh,mpData(mp),nIN,nn);                          % basis function and spatial derivatives
     mpData(mp).nIN  = nIN;                                                  % nodes associated with material point
     mpData(mp).eIN  = eIN;                                                  % elements associated with material point 
     mpData(mp).Svp  = Svp;                                                  % basis functions
