@@ -32,11 +32,9 @@ nmp  = size(mpData,2);                                                      % nu
 fext = zeros(nodes*nD,1);                                                   % zero the external force vector
 grav = zeros(nD,1); grav(nD) = -g;                                          % gavity vector
 for mp = 1:nmp
-   nIN = mpData(mp).nIN;                                                    % nodes associated with MP
-   nn  = length(nIN);                                                       % number of nodes influencing the MP
    Svp = mpData(mp).Svp;                                                    % basis functions
    fp  = (mpData(mp).mpM*grav + mpData(mp).fp)*Svp;                         % material point body & point nodal forces
-   ed  = repmat((nIN-1)*nD,nD,1)+repmat((1:nD).',1,nn);                     % nodel degrees of freedom 
+   ed  = mpData(mp).ed;
    fext(ed) = fext(ed) + fp;                                                % combine into external force vector
 end
 end

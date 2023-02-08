@@ -19,9 +19,8 @@
 % POSTPRO               - post processing function including vtk output
 % ELEMCOORDLIM          - find the coordinate limits of the elements
 %--------------------------------------------------------------------------
-% clear;
 addpath('constitutive','functions','plotting','setup');        
-[lstps,g,mpData,mesh] = setupGrid(nelsy,mp);                                          % setup information
+[lstps,g,mpData,mesh] = setupGrid(nelsy,mp);                                % setup information
 NRitMax = 10; tol = 1e-9;                                                   % Newton Raphson parameters
 [nodes,nD] = size(mesh.coord);                                              % number of nodes and dimensions
 [nels,nen] = size(mesh.etpl);                                               % number of elements and nodes/element
@@ -32,6 +31,7 @@ uvw  = zeros(nDoF,1);                                                       % ze
 run postPro;                                                                % plotting initial state & mesh
 [mesh] = ElemCoordLim(mesh);                                                % finds the coordinate limits for each element
 eINall = (1:nels).';                                                        % list of all elements
+pool=parpool('threads');
 for lstp=1:lstps                                                            % loadstep loop
   fprintf(1,'\n%s %4i %s %4i\n','loadstep ',lstp,' of ',lstps);             % text output to screen (loadstep)
   [mesh,mpData] = elemMPinfo(mesh,mpData,eINall);                           % material point - element information
@@ -48,7 +48,7 @@ for lstp=1:lstps                                                            % lo
     [duvw,drct] = linSolve(mesh.bc,Kt,oobf,NRit,fd);                        % linear solver
     uvw  = uvw+duvw;                                                        % update displacements
     frct = frct+drct;                                                       % update reaction forces
-    [fint,Kt,mpData] = detMPs(uvw,mpData);                                  % global stiffness & internal force
+    [fint,Kt,mpData] = detMPsTest(uvw,mpData);                                 % global stiffness & internal force
     oobf = (fext-fint+frct);                                                % out-of-balance force
     fErr = norm(oobf)/norm(fext+frct+eps);                                  % normalised oobf error
     NRit = NRit+1;                                                          % increment the NR counter

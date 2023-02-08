@@ -9,7 +9,7 @@ function [fint,Kt,mpData] = detMPs(uvw,mpData)
 % nodes that it influences based on a Updated Lagrangian finite deformation 
 % formulation.  The function also returns the stresses at the particles and 
 % the internal force contribution.  This function allows for elasto-
-% plasticity at the material points.  The functionis applicable to 1, 2 and
+% plasticity at the material points.  The function is applicable to 1, 2 and
 % 3 dimensional problems without modification as well as different material 
 % point methods and background meshes.   
 % 
@@ -69,11 +69,9 @@ end
 
 for mp=1:nmp                                                                % material point loop
     
-    nIN = mpData(mp).nIN;                                                   % nodes associated with the material point 
     dNx = mpData(mp).dSvp;                                                  % basis function derivatives (start of lstp)
     nn  = size(dNx,2);                                                      % no. dimensions & no. nodes
-    ed  = repmat((nIN-1)*nD,nD,1)+repmat((1:nD).',1,nn);                    % degrees of freedom of nodes (matrix form)
-    ed  = reshape(ed,1,nn*nD);                                              % degrees of freedom of nodes (vector form)
+    ed  = reshape(mpData(mp).ed,1,nn*nD);                                   % degrees of freedom of nodes (vector form)
     
     if nD==1                                                                % 1D case
         G=dNx;                                                              % strain-displacement matrix
@@ -145,8 +143,9 @@ for mp=1:nmp                                                                % ma
 
     G  = dXdx(aPos,aPos)*G;                                                 % derivatives of basis functions (current) 
     
-    kp = mpData(mp).vp*det(dF)*(G.'*A(aPos,aPos)*G);                        % material point stiffness contribution
-    fp = mpData(mp).vp*det(dF)*(G.'*sig(sPos));                             % internal force contribution
+    mpVol = mpData(mp).vp*det(dF);                                          % Updated material point volume
+    kp = mpVol*(G.'*A(aPos,aPos)*G);                                        % material point stiffness contribution
+    fp = mpVol*(G.'*sig(sPos));                                             % internal force contribution
     
     mpData(mp).F    = F;                                                    % store deformation gradient
     mpData(mp).sig  = sig;                                                  % store Cauchy stress

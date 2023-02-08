@@ -57,6 +57,7 @@ for mp = 1:nmp
     mpData(mp).dSvp = dSvp;                                                 % basis function derivatives
     mpData(mp).nSMe = (nn*nD)^2;                                            % number stiffness matrix components
     eInA(eIN) = 1;                                                          % identify elements in the analysis
+    mpData(mp).ed=repmat((nIN-1)*nD,nD,1)+repmat((1:nD).',1,nn);
 end
 mesh.eInA = eInA;                                                           % store eInA to mesh structured array
 end
