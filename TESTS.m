@@ -24,3 +24,18 @@ else                                                                          % 
     G([5 2 6],2:nD:end)=dNx;
     G([8 7 3],3:nD:end)=dNx;
 end
+
+if nD==1                                                                      % 1D case
+    G=dNx;                                                                    % strain-displacement matrix
+elseif nD==2                                                                  % 2D case (plane strain & stress)
+    G=zeros(4,nD*nn);                                                         % zero the strain-disp matrix (2D)
+    G(1,1:nD:end)=dNx(1,:);                                                    % strain-displacement matrix
+    G(3,1:nD:end)=dNx(2,:);
+    G(2,2:nD:end)=dNx(1,:);
+    G(4,2:nD:end)=dNx(2,:);
+else                                                                          % 3D case
+    G=zeros(9,nD*nn);                                                         % zero the strain-disp matrix (3D)
+    G([1 4 9],1:nD:end)=dNx;                                                  % strain-displacement matrix
+    G([5 2 6],2:nD:end)=dNx;
+    G([8 7 3],3:nD:end)=dNx;
+end

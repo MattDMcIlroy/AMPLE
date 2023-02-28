@@ -1,4 +1,4 @@
-function [fint,Kt,mpData] = detMPs(uvw,mpData)
+function [fint,Kt,mpData] = detMPsImproved(uvw,mpData)
 
 %Stiffness and internal force calculation for all material points
 %--------------------------------------------------------------------------
@@ -143,8 +143,9 @@ for mp=1:nmp                                                                % ma
 
     G  = dXdx(aPos,aPos)*G;                                                 % derivatives of basis functions (current) 
     
-    kp = mpData(mp).vp*det(dF)*(G.'*A(aPos,aPos)*G);                        % material point stiffness contribution
-    fp = mpData(mp).vp*det(dF)*(G.'*sig(sPos));                             % internal force contribution
+    mpVol = mpData(mp).vp*det(dF);                                          % Updated material point volume
+    kp = mpVol*(G.'*A(aPos,aPos)*G);                                        % material point stiffness contribution
+    fp = mpVol*(G.'*sig(sPos));                                             % internal force contribution
 
     mpData(mp).F    = F;                                                    % store deformation gradient
     mpData(mp).sig  = sig;                                                  % store Cauchy stress

@@ -29,26 +29,30 @@ nmp  = length(mpData);                                                      % nu
 lstp = 0;                                                                   % zero loadstep counter (for plotting function)
 uvw  = zeros(nDoF,1);                                                       % zeros displacements (for plotting function)
 run postPro;                                                                % plotting initial state & mesh
-[mesh] = ElemCoordLim(mesh);                                                % finds the coordinate limits for each element
-eINall = (1:nels).';                                                        % list of all elements
-pool=parpool('threads');
+%OLD [mesh] = ElemCoordLim(mesh);                                                % finds the coordinate limits for each element
+% eINall = (1:nels).';                                                        % list of all elements
+[mesh] = NodeCoordLim(mesh);                                                % finds the coordinate limits for each element
+nINall = (1:nodes).';                                                        % list of all elements
 for lstp=1:lstps                                                            % loadstep loop
   fprintf(1,'\n%s %4i %s %4i\n','loadstep ',lstp,' of ',lstps);             % text output to screen (loadstep)
-  [mesh,mpData] = elemMPinfo(mesh,mpData,eINall);                           % material point - element information
+%OLD  [mesh,mpData] = elemMPinfo(mesh,mpData,eINall);                           % material point - element information
+  [mesh,mpData] = elemMPinfoTEST(mesh,mpData,nINall);                       % material point - element information
   fext = detExtForce(nodes,nD,g,mpData);                                    % external force calculation (total)
   fext = fext*lstp/lstps;                                                   % current external force value
   oobf = fext;                                                              % initial out-of-balance force
   fErr = 1;                                                                 % initial error
   frct = zeros(nDoF,1);                                                     % zero the reaction forces
   uvw  = zeros(nDoF,1);                                                     % zero the displacements
-  fd   = detFDoFs(mesh);                                                    % free degrees of freedom
+%OLD  fd   = detFDoFs(mesh);                                                    % free degrees of freedom
+  fd   = detFDoFsTEST(mesh);                                                    % free degrees of freedom
   NRit = 0;                                                                 % zero the iteration counter
   Kt   = 0;                                                                 % zero global stiffness matrix
   while (fErr > tol) && (NRit < NRitMax) || (NRit < 2)                      % global equilibrium loop
     [duvw,drct] = linSolve(mesh.bc,Kt,oobf,NRit,fd);                        % linear solver
     uvw  = uvw+duvw;                                                        % update displacements
     frct = frct+drct;                                                       % update reaction forces
-    [fint,Kt,mpData] = detMPsTest(uvw,mpData);                              % global stiffness & internal force
+%OLD    [fint,Kt,mpData] = detMPs(uvw,mpData);                                  % global stiffness & internal force
+    [fint,Kt,mpData] = detMPsImproved(uvw,mpData);                                  % global stiffness & internal force
     oobf = (fext-fint+frct);                                                % out-of-balance force
     fErr = norm(oobf)/norm(fext+frct+eps);                                  % normalised oobf error
     NRit = NRit+1;                                                          % increment the NR counter
